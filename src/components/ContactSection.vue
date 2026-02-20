@@ -87,9 +87,9 @@ import emailjs from '@emailjs/browser'
 // 2. Add a Gmail/Outlook service → copy the Service ID below
 // 3. Create an email template → copy the Template ID below
 // 4. Go to Account → API Keys → copy your Public Key below
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY'   // e.g. 'abc123XYZ'
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID'   // e.g. 'service_xxxxxx'
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'  // e.g. 'template_xxxxxx'
+const EMAILJS_PUBLIC_KEY  = 'zKNtNfYlCoCXVMCd8'
+const EMAILJS_SERVICE_ID  = 'service_6kfhg4k'
+const EMAILJS_TEMPLATE_ID = 'PdyHBKkx48G5fHoRMWc1O'
 // ───────────────────────────────────────────────────────────────────────────────
 
 const infoEl  = ref(null)
