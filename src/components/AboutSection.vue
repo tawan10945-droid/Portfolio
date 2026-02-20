@@ -55,10 +55,10 @@ import { ref, onMounted } from 'vue'
 
 const el = ref(null)
 const stats = [
-  { number: '3+',  label: 'Years Experience' },
-  { number: '20+', label: 'Projects Completed' },
+  { number: '0',  label: 'Years Experience' },
+  { number: '2', label: 'Projects Completed' },
   { number: '10+', label: 'Technologies' },
-  { number: '5+',  label: 'Certificates' },
+  { number: '4',  label: 'Certificates' },
 ]
 const highlights = [
   'Clean, maintainable code architecture',
