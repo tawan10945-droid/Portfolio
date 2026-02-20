@@ -2,11 +2,6 @@
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-left">
-        <a href="#hero" class="footer-logo" @click.prevent="scrollTo('hero')">
-          <span class="logo-bracket">&lt;</span>
-          <span>Portfolio</span>
-          <span class="logo-bracket">/&gt;</span>
-        </a>
         <p class="footer-tagline">Crafting digital experiences with passion & precision.</p>
       </div>
 
