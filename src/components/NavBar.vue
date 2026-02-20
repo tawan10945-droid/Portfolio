@@ -1,12 +1,7 @@
 <template>
   <nav class="navbar" :class="{ scrolled: isScrolled }">
     <div class="container nav-inner">
-      <!-- Logo -->
-      <a href="#hero" class="nav-logo" @click.prevent="scrollTo('hero')">
-        <span class="logo-bracket">&lt;</span>
-        <span class="logo-name">Portfolio</span>
-        <span class="logo-bracket">/&gt;</span>
-      </a>
+      
 
       <!-- Desktop Links -->
       <ul class="nav-links">
