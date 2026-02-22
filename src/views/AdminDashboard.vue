@@ -315,9 +315,6 @@ function fileToBase64(file) {
 }
 
 // ── Project Modal ──
-const projModal = reactive({ open: false, isEdit: false, form: emptyProjForm() })
-const tagsInput = ref('')
-
 const gradients = [
   'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
   'linear-gradient(135deg, #0c1445 0%, #1a0533 100%)',
@@ -333,6 +330,10 @@ const gradients = [
 function emptyProjForm() {
   return { id: null, title: '', desc: '', emoji: '🚀', tags: [], github: '', demo: '', gradient: gradients[0] }
 }
+
+const projModal = reactive({ open: false, isEdit: false, form: emptyProjForm() })
+const tagsInput = ref('')
+
 function openProjectModal(proj = null) {
   projModal.isEdit = !!proj
   if (proj) {
