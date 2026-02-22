@@ -17,12 +17,19 @@
           @click="openLightbox(i)"
         >
           <div class="cert-img-wrapper">
+            <!-- PDF thumbnail -->
+            <div v-if="isPdf(c.image)" class="cert-pdf-thumb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><polyline points="9 9 10 9"/></svg>
+              <span>PDF Certificate</span>
+            </div>
+            <!-- Image -->
             <img
+              v-else
               :src="c.image"
               :alt="c.title"
               class="cert-img"
               loading="lazy"
-              @error="onImgError($event, c)"
+              @error="onImgError"
             />
             <!-- Overlay on hover -->
             <div class="cert-overlay">
@@ -30,7 +37,7 @@
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
               </svg>
-              <span>View Certificate</span>
+              <span>{{ isPdf(c.image) ? 'View PDF' : 'View Certificate' }}</span>
             </div>
           </div>
           <div class="cert-info">
@@ -71,7 +78,15 @@
           </svg>
         </button>
         <div class="lb-content">
-          <img :src="store.certs[lightboxIndex].image" :alt="store.certs[lightboxIndex].title" class="lb-img" />
+          <!-- PDF: show iframe embed -->
+          <iframe
+            v-if="isPdf(store.certs[lightboxIndex].image)"
+            :src="store.certs[lightboxIndex].image"
+            class="lb-pdf"
+            title="Certificate PDF"
+          />
+          <!-- Image -->
+          <img v-else :src="store.certs[lightboxIndex].image" :alt="store.certs[lightboxIndex].title" class="lb-img" />
           <div class="lb-caption">
             <span class="lb-issuer">{{ store.certs[lightboxIndex].issuer }}</span>
             <h3 class="lb-title">{{ store.certs[lightboxIndex].title }}</h3>
@@ -110,7 +125,9 @@ function onImgError(event) {
   event.target.style.opacity = '0.3'
 }
 
-
+function isPdf(src) {
+  return src && (src.startsWith('data:application/pdf') || src.toLowerCase().endsWith('.pdf'))
+}
 
 function openLightbox(index) {
   lightboxIndex.value = index
@@ -191,6 +208,21 @@ onUnmounted(() => {
   transition: transform 0.4s ease;
 }
 .cert-item:hover .cert-img { transform: scale(1.04); }
+
+/* PDF thumbnail in gallery card */
+.cert-pdf-thumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #a78bfa;
+}
+.cert-pdf-thumb svg { width: 40px; height: 40px; }
+.cert-pdf-thumb span { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; }
 
 /* ── Overlay ── */
 .cert-overlay {
@@ -293,6 +325,15 @@ onUnmounted(() => {
   object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+}
+
+/* PDF in lightbox — full embed */
+.lb-pdf {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
 }
 
 .lb-caption {

@@ -137,18 +137,26 @@
             </button>
           </div>
           <form @submit.prevent="saveCert" class="modal-form">
-            <!-- Image upload -->
+            <!-- File upload (Image or PDF) -->
             <div class="field">
-              <label>Certificate Image</label>
+              <label>Certificate Image / PDF</label>
               <div class="img-upload-area" @click="$refs.fileInput.click()" @dragover.prevent @drop.prevent="onDrop">
-                <img v-if="certModal.form.image" :src="certModal.form.image" class="preview-img" />
+                <!-- PDF preview -->
+                <div v-if="certModal.form.image && isPdf(certModal.form.image)" class="pdf-preview">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><polyline points="9 9 10 9"/></svg>
+                  <span>PDF อัปโหลดแล้ว ✓</span>
+                  <span class="upload-hint">คลิกเพื่อเปลี่ยนไฟล์</span>
+                </div>
+                <!-- Image preview -->
+                <img v-else-if="certModal.form.image" :src="certModal.form.image" class="preview-img" />
+                <!-- Empty state -->
                 <div v-else class="upload-placeholder">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <span>Click or drag image here</span>
-                  <span class="upload-hint">PNG, JPG, WebP</span>
+                  <span>Click or drag file here</span>
+                  <span class="upload-hint">PNG, JPG, WebP หรือ PDF</span>
                 </div>
               </div>
-              <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFileChange" />
+              <input ref="fileInput" type="file" accept="image/*,.pdf" style="display:none" @change="onFileChange" />
             </div>
 
             <div class="field-row">
@@ -303,6 +311,7 @@ function saveCert() {
 function onFileChange(e) {
   const file = e.target.files[0]
   if (file) fileToBase64(file)
+  e.target.value = '' // reset so same file can be re-selected
 }
 function onDrop(e) {
   const file = e.dataTransfer.files[0]
@@ -310,8 +319,11 @@ function onDrop(e) {
 }
 function fileToBase64(file) {
   const reader = new FileReader()
-  reader.onload = (e) => { certModal.form.image = e.target.result }
+  reader.onload = (ev) => { certModal.form.image = ev.target.result }
   reader.readAsDataURL(file)
+}
+function isPdf(src) {
+  return src && (src.startsWith('data:application/pdf') || src.toLowerCase().endsWith('.pdf'))
 }
 
 // ── Project Modal ──
@@ -673,6 +685,18 @@ function doDelete() {
 .upload-placeholder svg { width: 36px; height: 36px; }
 .upload-placeholder span { font-size: 0.82rem; }
 .upload-hint { font-size: 0.72rem !important; color: rgba(255,255,255,0.2); }
+
+/* PDF preview in upload area */
+.pdf-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #a78bfa;
+  padding: 2rem;
+}
+.pdf-preview svg { width: 42px; height: 42px; }
+.pdf-preview span { font-size: 0.85rem; font-weight: 600; }
 
 /* Gradient swatches */
 .gradient-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
