@@ -8,7 +8,7 @@
       </div>
 
       <div class="projects-grid">
-        <article class="project-card glass-card fade-in" ref="el" v-for="(p, i) in projects" :key="p.title" :style="{ transitionDelay: i * 0.1 + 's' }">
+        <article class="project-card glass-card fade-in" ref="el" v-for="(p, i) in store.projects" :key="p.id || p.title" :style="{ transitionDelay: i * 0.1 + 's' }">
           <div class="project-banner" :style="{ background: p.gradient }">
             <span class="project-emoji">{{ p.emoji }}</span>
           </div>
@@ -37,66 +37,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useStore } from '../composables/useStore.js'
 
+const store = useStore()
 const headerEl = ref(null)
 const el = ref(null)
 
-const projects = [
-  {
-    title: 'Payroll Management System',
-    desc: 'Full-stack payroll application with employee management, payslip generation, leave tracking, and MySQL backend deployed on AWS.',
-    tags: ['Node.js', 'MySQL', 'Docker', 'AWS'],
-    github: 'https://github.com',
-    demo: null,
-    gradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
-    emoji: '💼',
-  },
-  {
-    title: 'Portfolio Website',
-    desc: 'Personal portfolio built with Vue 3, Vite, and pure CSS featuring smooth scroll animations, glassmorphism cards, and a dark-mode design system.',
-    tags: ['Vue 3', 'Vite', 'CSS'],
-    github: 'https://github.com',
-    demo: '#',
-    gradient: 'linear-gradient(135deg, #0c1445 0%, #1a0533 100%)',
-    emoji: '🚀',
-  },
-  {
-    title: 'Calendar & Event Manager',
-    desc: 'Home-page calendar integration using FullCalendar and Firebase Firestore, displaying job events, leave schedules, and public holidays in real time.',
-    tags: ['Firebase', 'FullCalendar', 'JavaScript'],
-    github: 'https://github.com',
-    demo: null,
-    gradient: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
-    emoji: '📅',
-  },
-  {
-    title: 'REST API Service',
-    desc: 'TypeScript-based Express RESTful API with JWT authentication, MySQL/PostgreSQL support, Dockerized and deployable to AWS App Runner.',
-    tags: ['TypeScript', 'Express', 'Docker'],
-    github: 'https://github.com',
-    demo: null,
-    gradient: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
-    emoji: '⚙️',
-  },
-  {
-    title: 'Angular Payroll Frontend',
-    desc: 'Angular Single-Page Application for payroll management with component-driven architecture, reactive forms, and Material Design UI.',
-    tags: ['Angular', 'TypeScript', 'CSS'],
-    github: 'https://github.com',
-    demo: null,
-    gradient: 'linear-gradient(135deg, #3f0012 0%, #7f1d1d 100%)',
-    emoji: '🔺',
-  },
-  {
-    title: 'Database Migration Tool',
-    desc: 'Automated PostgreSQL-to-MySQL migration utility with schema conversion, query rewriting, and rollback support.',
-    tags: ['Node.js', 'MySQL', 'PostgreSQL'],
-    github: 'https://github.com',
-    demo: null,
-    gradient: 'linear-gradient(135deg, #0c2340 0%, #1e3a5f 100%)',
-    emoji: '🗄️',
-  },
-]
+
 
 onMounted(() => {
   const obs = new IntersectionObserver((entries) => {

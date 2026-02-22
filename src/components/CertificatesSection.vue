@@ -11,8 +11,8 @@
       <div class="cert-gallery">
         <div
           class="cert-item fade-in"
-          v-for="(c, i) in certs"
-          :key="c.title"
+          v-for="(c, i) in store.certs"
+          :key="c.id || c.title"
           :style="{ transitionDelay: i * 0.08 + 's' }"
           @click="openLightbox(i)"
         >
@@ -71,11 +71,11 @@
           </svg>
         </button>
         <div class="lb-content">
-          <img :src="certs[lightboxIndex].image" :alt="certs[lightboxIndex].title" class="lb-img" />
+          <img :src="store.certs[lightboxIndex].image" :alt="store.certs[lightboxIndex].title" class="lb-img" />
           <div class="lb-caption">
-            <span class="lb-issuer">{{ certs[lightboxIndex].issuer }}</span>
-            <h3 class="lb-title">{{ certs[lightboxIndex].title }}</h3>
-            <span class="lb-date">{{ certs[lightboxIndex].date }}</span>
+            <span class="lb-issuer">{{ store.certs[lightboxIndex].issuer }}</span>
+            <h3 class="lb-title">{{ store.certs[lightboxIndex].title }}</h3>
+            <span class="lb-date">{{ store.certs[lightboxIndex].date }}</span>
           </div>
         </div>
         <button class="lb-nav lb-next" @click="nextCert" aria-label="Next">
@@ -85,7 +85,7 @@
         </button>
         <div class="lb-indicator">
           <span
-            v-for="(c, i) in certs"
+            v-for="(c, i) in store.certs"
             :key="i"
             class="lb-dot"
             :class="{ active: i === lightboxIndex }"
@@ -99,110 +99,18 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useStore } from '../composables/useStore.js'
 
+const store = useStore()
 const headerEl = ref(null)
 const lightboxIndex = ref(null)
 
-// Placeholder image generator (colored gradient with text)
-function placeholderImg(abbr, bg) {
-  const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null
-  if (!canvas) return ''
-  canvas.width = 800
-  canvas.height = 560
-  const ctx = canvas.getContext('2d')
-  // gradient background
-  const grad = ctx.createLinearGradient(0, 0, 800, 560)
-  const colors = bg.match(/#[0-9a-fA-F]{6}/g) || ['#6366f1', '#4f46e5']
-  grad.addColorStop(0, colors[0])
-  grad.addColorStop(1, colors[1] || colors[0])
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, 800, 560)
-  // border
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)'
-  ctx.lineWidth = 12
-  ctx.strokeRect(24, 24, 752, 512)
-  // text
-  ctx.fillStyle = 'rgba(255,255,255,0.95)'
-  ctx.font = 'bold 80px sans-serif'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(abbr, 400, 280)
-  ctx.font = '28px sans-serif'
-  ctx.fillStyle = 'rgba(255,255,255,0.6)'
-  ctx.fillText('Certificate of Completion', 400, 380)
-  return canvas.toDataURL('image/png')
+// Fallback placeholder if image fails
+function onImgError(event) {
+  event.target.style.opacity = '0.3'
 }
 
-const certs = [
-  {
-    title: 'AWS Certified Cloud Practitioner',
-    issuer: 'Amazon Web Services',
-    date: '2024',
-    abbr: 'AWS',
-    bg: 'linear-gradient(135deg, #ff9900 0%, #c97a00 100%)',
-    image: new URL('../assets/certificates/aws.png', import.meta.url).href,
-    url: 'https://aws.amazon.com/certification/',
-  },
-  {
-    title: 'Docker Certified Associate',
-    issuer: 'Docker, Inc.',
-    date: '2024',
-    abbr: 'Docker',
-    bg: 'linear-gradient(135deg, #2496ed 0%, #0d6eab 100%)',
-    image: new URL('../assets/certificates/docker.png', import.meta.url).href,
-    url: 'https://www.docker.com/certification/',
-  },
-  {
-    title: 'JavaScript Algorithms and Data Structures',
-    issuer: 'freeCodeCamp',
-    date: '2023',
-    abbr: 'JS',
-    bg: 'linear-gradient(135deg, #f7df1e 0%, #c9b400 100%)',
-    image: new URL('../assets/certificates/javascript.png', import.meta.url).href,
-    url: 'https://www.freecodecamp.org/',
-  },
-  {
-    title: 'TypeScript Fundamentals',
-    issuer: 'Microsoft Learn',
-    date: '2023',
-    abbr: 'TS',
-    bg: 'linear-gradient(135deg, #3178c6 0%, #2563a8 100%)',
-    image: new URL('../assets/certificates/typescript.png', import.meta.url).href,
-    url: 'https://learn.microsoft.com',
-  },
-  {
-    title: 'Vue.js — The Complete Guide',
-    issuer: 'Udemy',
-    date: '2023',
-    abbr: 'Vue',
-    bg: 'linear-gradient(135deg, #42b883 0%, #2d8a62 100%)',
-    image: new URL('../assets/certificates/vuejs.png', import.meta.url).href,
-    url: 'https://www.udemy.com/',
-  },
-  {
-    title: 'Node.js Developer',
-    issuer: 'Coursera',
-    date: '2022',
-    abbr: 'Node',
-    bg: 'linear-gradient(135deg, #68a063 0%, #4a7245 100%)',
-    image: new URL('../assets/certificates/nodejs.png', import.meta.url).href,
-    url: 'https://www.coursera.org/',
-  },
-  {
-    title: 'Programming Concepts for Python',
-    issuer: 'LinkedIn Learning',
-    date: '2026',
-    abbr: 'Python',
-    bg: 'linear-gradient(135deg, #306998 0%, #ffd43b 100%)',
-    image: new URL('../assets/certificates/python.png', import.meta.url).href,
-    url: 'https://www.linkedin.com/learning/',
-  },
-]
 
-// Fallback: generate placeholder if image fails to load
-function onImgError(event, cert) {
-  event.target.src = placeholderImg(cert.abbr, cert.bg)
-}
 
 function openLightbox(index) {
   lightboxIndex.value = index
@@ -213,10 +121,10 @@ function closeLightbox() {
   document.body.style.overflow = ''
 }
 function prevCert() {
-  lightboxIndex.value = (lightboxIndex.value - 1 + certs.length) % certs.length
+  lightboxIndex.value = (lightboxIndex.value - 1 + store.certs.length) % store.certs.length
 }
 function nextCert() {
-  lightboxIndex.value = (lightboxIndex.value + 1) % certs.length
+  lightboxIndex.value = (lightboxIndex.value + 1) % store.certs.length
 }
 
 function onKeydown(e) {
