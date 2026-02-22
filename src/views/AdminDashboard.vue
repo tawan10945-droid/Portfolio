@@ -55,7 +55,14 @@
         <div class="card-grid">
           <div class="admin-cert-card" v-for="c in store.certs" :key="c.id">
             <div class="admin-cert-img">
-              <img :src="c.image" :alt="c.title" />
+              <!-- show PDF embed if PDF, otherwise image -->
+              <iframe
+                v-if="isPdf(c.image)"
+                :src="c.image"
+                class="admin-cert-pdf"
+                title="Certificate PDF"
+              />
+              <img v-else :src="c.image" :alt="c.title" />
             </div>
             <div class="admin-cert-info">
               <span class="admin-cert-issuer">{{ c.issuer }}</span>
@@ -499,6 +506,7 @@ function doDelete() {
 .admin-cert-card:hover { border-color: rgba(167,139,250,0.3); }
 .admin-cert-img { aspect-ratio: 16/10; overflow: hidden; }
 .admin-cert-img img { width: 100%; height: 100%; object-fit: cover; }
+.admin-cert-pdf { width: 100%; height: 100%; border: none; display: block; pointer-events: none; }
 .admin-cert-info { padding: 0.9rem 0.9rem 0.5rem; }
 .admin-cert-issuer { font-size: 0.65rem; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.08em; }
 .admin-cert-title { font-size: 0.82rem; font-weight: 700; color: #fff; margin: 0.25rem 0 0.3rem; line-height: 1.35; }
