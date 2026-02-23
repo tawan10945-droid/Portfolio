@@ -51,7 +51,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const ADMIN_PASSWORD = 'admin1234'
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
 const router = useRouter()
 
 const password = ref('')
