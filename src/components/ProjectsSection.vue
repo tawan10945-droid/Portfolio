@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import { useStore } from '../composables/useStore.js'
 
 const store = useStore()
@@ -50,7 +50,15 @@ onMounted(() => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target) } })
   }, { threshold: 0.1 })
   ;[headerEl.value].forEach(r => r && obs.observe(r))
-  document.querySelectorAll('.project-card.fade-in').forEach(c => obs.observe(c))
+  
+  const observeCards = () => {
+      document.querySelectorAll('.project-card.fade-in').forEach(c => obs.observe(c))
+  }
+  observeCards()
+  watch(() => store.projects, async () => {
+      await nextTick()
+      observeCards()
+  }, { deep: true })
 })
 </script>
 

@@ -26,6 +26,10 @@
       </nav>
 
       <div class="sidebar-footer">
+        <button class="btn-view-site" style="color: #fbbf24; border-color: rgba(251,191,36,0.2)" @click="store.resetToDefaults()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 2v6h6"/></svg>
+          Load Demo Data
+        </button>
         <a href="#/" class="btn-view-site" target="_blank">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View Site

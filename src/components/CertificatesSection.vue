@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useStore } from '../composables/useStore.js'
 
 const store = useStore()
@@ -159,7 +159,15 @@ onMounted(() => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target) } })
   }, { threshold: 0.1 })
   ;[headerEl.value].forEach(r => r && obs.observe(r))
-  document.querySelectorAll('.cert-item.fade-in').forEach(c => obs.observe(c))
+  
+  const observeItems = () => {
+    document.querySelectorAll('.cert-item.fade-in').forEach(c => obs.observe(c))
+  }
+  observeItems()
+  watch(() => store.certs, async () => {
+    await nextTick()
+    observeItems()
+  }, { deep: true })
 })
 
 onUnmounted(() => {

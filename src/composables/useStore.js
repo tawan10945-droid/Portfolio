@@ -20,9 +20,7 @@ export function useStore() {
             });
 
             state.certs.splice(0, state.certs.length); // Clear array
-            if (certs.length === 0) {
-                state.certs.push(...defaultCerts);
-            } else {
+            if (certs.length > 0) {
                 state.certs.push(...certs.sort((a, b) => (a.id > b.id ? 1 : -1)));
             }
         });
@@ -34,9 +32,7 @@ export function useStore() {
             });
 
             state.projects.splice(0, state.projects.length);
-            if (projects.length === 0) {
-                state.projects.push(...defaultProjects);
-            } else {
+            if (projects.length > 0) {
                 state.projects.push(...projects.sort((a, b) => (a.id > b.id ? 1 : -1)));
             }
         });
@@ -51,7 +47,11 @@ export function useStore() {
         await updateDoc(doc(db, 'certs', id.toString()), clone);
     }
     async function deleteCert(id) {
-        await deleteDoc(doc(db, 'certs', id.toString()));
+        try {
+            await deleteDoc(doc(db, 'certs', id.toString()));
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     async function addProject(project) {
@@ -63,7 +63,11 @@ export function useStore() {
         await updateDoc(doc(db, 'projects', id.toString()), clone);
     }
     async function deleteProject(id) {
-        await deleteDoc(doc(db, 'projects', id.toString()));
+        try {
+            await deleteDoc(doc(db, 'projects', id.toString()));
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     async function resetToDefaults() {
