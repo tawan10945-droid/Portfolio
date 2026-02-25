@@ -166,7 +166,10 @@ onMounted(() => {
   observeItems()
   watch(() => store.certs, async () => {
     await nextTick()
-    observeItems()
+    // Force visible for async-loaded data (works reliably on mobile too)
+    document.querySelectorAll('.cert-item.fade-in').forEach(c => {
+      c.classList.add('visible')
+    })
   }, { deep: true })
 })
 

@@ -57,7 +57,10 @@ onMounted(() => {
   observeCards()
   watch(() => store.projects, async () => {
       await nextTick()
-      observeCards()
+      // Force visible for async-loaded data (works reliably on mobile too)
+      document.querySelectorAll('.project-card.fade-in').forEach(c => {
+        c.classList.add('visible')
+      })
   }, { deep: true })
 })
 </script>
