@@ -1,58 +1,85 @@
-import { reactive, watch } from 'vue'
+import { reactive } from 'vue'
 import { defaultCerts, defaultProjects } from './defaultData.js'
-
-function load(key, fallback) {
-    try {
-        const raw = localStorage.getItem(key)
-        return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(fallback))
-    } catch {
-        return JSON.parse(JSON.stringify(fallback))
-    }
-}
+import { db } from '../firebase.js'
+import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, writeBatch } from 'firebase/firestore'
 
 const state = reactive({
-    certs: load('portfolio_certs', defaultCerts),
-    projects: load('portfolio_projects', defaultProjects),
+    certs: [],
+    projects: [],
+    initializedFirebase: false
 })
 
-watch(() => state.certs, val => localStorage.setItem('portfolio_certs', JSON.stringify(val)), { deep: true })
-watch(() => state.projects, val => localStorage.setItem('portfolio_projects', JSON.stringify(val)), { deep: true })
-
 export function useStore() {
-    // ── Certificates ──
-    function addCert(cert) {
-        cert.id = Date.now()
-        state.certs.push(cert)
-    }
-    function updateCert(id, data) {
-        const i = state.certs.findIndex(c => c.id === id)
-        if (i !== -1) state.certs[i] = { ...state.certs[i], ...data }
-    }
-    function deleteCert(id) {
-        state.certs = state.certs.filter(c => c.id !== id)
+    if (!state.initializedFirebase) {
+        state.initializedFirebase = true;
+
+        onSnapshot(collection(db, 'certs'), (snapshot) => {
+            const certs = [];
+            snapshot.forEach(d => {
+                certs.push({ ...d.data(), id: d.id });
+            });
+
+            state.certs.splice(0, state.certs.length); // Clear array
+            if (certs.length === 0) {
+                state.certs.push(...defaultCerts);
+            } else {
+                state.certs.push(...certs.sort((a, b) => (a.id > b.id ? 1 : -1)));
+            }
+        });
+
+        onSnapshot(collection(db, 'projects'), (snapshot) => {
+            const projects = [];
+            snapshot.forEach(d => {
+                projects.push({ ...d.data(), id: d.id });
+            });
+
+            state.projects.splice(0, state.projects.length);
+            if (projects.length === 0) {
+                state.projects.push(...defaultProjects);
+            } else {
+                state.projects.push(...projects.sort((a, b) => (a.id > b.id ? 1 : -1)));
+            }
+        });
     }
 
-    // ── Projects ──
-    function addProject(project) {
-        project.id = Date.now()
-        state.projects.push(project)
+    async function addCert(cert) {
+        const id = Date.now().toString();
+        await setDoc(doc(db, 'certs', id), { ...cert, id });
     }
-    function updateProject(id, data) {
-        const i = state.projects.findIndex(p => p.id === id)
-        if (i !== -1) state.projects[i] = { ...state.projects[i], ...data }
+    async function updateCert(id, data) {
+        const clone = { ...data };
+        await updateDoc(doc(db, 'certs', id.toString()), clone);
     }
-    function deleteProject(id) {
-        state.projects = state.projects.filter(p => p.id !== id)
+    async function deleteCert(id) {
+        await deleteDoc(doc(db, 'certs', id.toString()));
     }
 
-    function resetToDefaults() {
-        state.certs = JSON.parse(JSON.stringify(defaultCerts))
-        state.projects = JSON.parse(JSON.stringify(defaultProjects))
+    async function addProject(project) {
+        const id = Date.now().toString();
+        await setDoc(doc(db, 'projects', id), { ...project, id });
+    }
+    async function updateProject(id, data) {
+        const clone = { ...data };
+        await updateDoc(doc(db, 'projects', id.toString()), clone);
+    }
+    async function deleteProject(id) {
+        await deleteDoc(doc(db, 'projects', id.toString()));
+    }
+
+    async function resetToDefaults() {
+        const batch = writeBatch(db);
+        defaultCerts.forEach(c => {
+            batch.set(doc(db, 'certs', c.id.toString()), { ...c, id: c.id.toString() });
+        });
+        defaultProjects.forEach(p => {
+            batch.set(doc(db, 'projects', p.id.toString()), { ...p, id: p.id.toString() });
+        });
+        await batch.commit();
     }
 
     return {
-        certs: state.certs,
-        projects: state.projects,
+        get certs() { return state.certs },
+        get projects() { return state.projects },
         addCert, updateCert, deleteCert,
         addProject, updateProject, deleteProject,
         resetToDefaults,
