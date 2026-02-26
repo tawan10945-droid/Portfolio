@@ -56,7 +56,7 @@ import { ref, onMounted } from 'vue'
 const el = ref(null)
 const stats = [
   { number: '0',  label: 'Years Experience' },
-  { number: '2', label: 'Projects Completed' },
+  { number: '3', label: 'Projects Completed' },
   { number: '10+', label: 'Technologies' },
   { number: '4',  label: 'Certificates' },
 ]
